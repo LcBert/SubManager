@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SubManager</string>
+    <string name="title_activity_main">SubManager</string>
+    <string name="package_name">com.submanager.app</string>
+    <string name="custom_url_scheme">com.submanager.app</string>
+</resources>
