@@ -1,12 +1,14 @@
 import { useSubscriptions } from '../context/SubscriptionContext';
+import { useThemeLanguage } from '../context/ThemeLanguageContext';
 import { format, isAfter, isBefore, addMonths, addYears, parseISO, startOfDay } from 'date-fns';
 import { Settings } from 'lucide-react';
 
 const DashboardView = ({ setActiveTab }) => {
     const { subscriptions, getTotalMonthlySpend } = useSubscriptions();
+    const { language } = useThemeLanguage();
 
     // Simple formatting
-    const formattedTotal = getTotalMonthlySpend().toLocaleString('en-US', {
+    const formattedTotal = getTotalMonthlySpend().toLocaleString(language === 'it' ? 'it-IT' : 'en-US', {
         style: 'currency',
         currency: 'USD'
     });
@@ -42,7 +44,7 @@ const DashboardView = ({ setActiveTab }) => {
     return (
         <section className="view">
             <header className="app-header">
-                <h1>Dashboard</h1>
+                <h1>{language === 'it' ? 'Cruscotto' : 'Dashboard'}</h1>
                 <button className="icon-btn" aria-label="Settings" onClick={() => setActiveTab('settings')}>
                     <Settings size={20} />
                 </button>
@@ -51,28 +53,32 @@ const DashboardView = ({ setActiveTab }) => {
             <main className="scroll-content">
                 <div className="summary-card glassmorphism" style={{ padding: '30px 24px', marginBottom: '32px', textAlign: 'center', background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(30, 41, 59, 0.6) 100%)', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
                     <div style={{ fontSize: '14px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600, marginBottom: '8px' }}>
-                        Total Monthly Spend
+                        {language === 'it' ? 'Spesa mensile totale' : 'Total Monthly Spend'}
                     </div>
                     <div style={{ fontSize: '48px', fontWeight: 800, letterSpacing: '-1.5px', marginBottom: '8px' }}>
                         {formattedTotal}
                     </div>
                     <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-                        Across {subscriptions.length} active subscriptions
+                        {language === 'it'
+                            ? `Su ${subscriptions.length} abbonamenti attivi`
+                            : `Across ${subscriptions.length} active subscriptions`}
                     </div>
                 </div>
 
-                <h2 className="section-title">Upcoming Bills</h2>
+                <h2 className="section-title">{language === 'it' ? 'Prossime scadenze' : 'Upcoming Bills'}</h2>
 
                 <div className="upcoming-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {upcomingBills.length === 0 ? (
-                        <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '20px 0' }}>No bills coming up in the next month.</p>
+                        <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '20px 0' }}>
+                            {language === 'it' ? 'Nessuna scadenza nel prossimo mese.' : 'No bills coming up in the next month.'}
+                        </p>
                     ) : (
                         upcomingBills.map(sub => (
                             <div key={`upcoming-${sub.id}`} className="sub-item glassmorphism" style={{ display: 'flex', alignItems: 'center', padding: '16px', borderRadius: '16px', background: 'var(--surface-color)', border: '1px solid var(--border-color)' }}>
                                 <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: sub.color, marginRight: '16px' }} />
                                 <div style={{ flex: 1 }}>
                                     <div style={{ fontSize: '15px', fontWeight: 600 }}>{sub.title}</div>
-                                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{format(sub.nextDate, 'MMM do, yyyy')}</div>
+                                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{format(sub.nextDate, language === 'it' ? 'dd MMM yyyy' : 'MMM do, yyyy')}</div>
                                 </div>
                                 <div style={{ fontWeight: 700 }}>${parseFloat(sub.amount).toFixed(2)}</div>
                             </div>
