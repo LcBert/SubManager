@@ -58,14 +58,16 @@ function App() {
                             <ListIcon size={24} />
                             <span>{language === 'it' ? 'Abbonamenti' : 'Subs'}</span>
                         </button>
-                        <button
-                            className="nav-item add-action"
-                            onClick={() => openForm()}
-                        >
-                            <div className="fab">
-                                <Plus size={24} />
-                            </div>
-                        </button>
+                        {!isFormOpen && (
+                            <button
+                                className="nav-item add-action"
+                                onClick={() => openForm()}
+                            >
+                                <div className="fab">
+                                    <Plus size={24} />
+                                </div>
+                            </button>
+                        )}
                     </nav>
                 </div>
             </SubscriptionProvider>
