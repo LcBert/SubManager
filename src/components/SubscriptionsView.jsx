@@ -63,9 +63,11 @@ const SubscriptionsView = ({ onEdit }) => {
 
                                 <div className="sub-details" style={{ flex: 1 }}>
                                     <div className="sub-name" style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>{sub.title}</div>
-                                    <div className="sub-category" style={{ fontSize: '13px', color: 'var(--primary-color)', fontWeight: 500, marginBottom: '2px' }}>
-                                        {sub.category || (language === 'it' ? 'Altro' : 'Other')}
-                                    </div>
+                                    {sub.category && sub.category.trim() !== '' && (
+                                        <div className="sub-category" style={{ fontSize: '13px', color: 'var(--primary-color)', fontWeight: 500, marginBottom: '2px' }}>
+                                            {sub.category}
+                                        </div>
+                                    )}
                                     <div className="sub-cycle" style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
                                         {sub.method} • {sub.cycleType === 'monthly' ? 'Monthly' : sub.cycleType === 'yearly' ? 'Yearly' : `Every ${sub.cycleCount} mos`}
                                     </div>

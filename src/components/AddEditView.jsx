@@ -22,7 +22,7 @@ const AddEditView = ({ subId, onClose }) => {
         description: '',
         amount: '',
         method: 'Credit Card',
-        category: 'Other',
+        category: '',
         cycleType: 'monthly',
         cycleCount: '1',
         firstBill: new Date().toISOString().split('T')[0],
@@ -37,10 +37,15 @@ const AddEditView = ({ subId, onClose }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        // Remove category if empty or only whitespace
+        const cleanedFormData = { ...formData };
+        if (!cleanedFormData.category || cleanedFormData.category.trim() === '') {
+            delete cleanedFormData.category;
+        }
         if (isEditing) {
-            updateSubscription({ ...formData, id: subId });
+            updateSubscription({ ...cleanedFormData, id: subId });
         } else {
-            addSubscription(formData);
+            addSubscription(cleanedFormData);
         }
         onClose();
     };
