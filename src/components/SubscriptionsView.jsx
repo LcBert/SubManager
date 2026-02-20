@@ -7,9 +7,13 @@ const SubscriptionsView = ({ onEdit }) => {
     const { subscriptions } = useSubscriptions();
     const { currency, language } = useThemeLanguage();
     const [search, setSearch] = useState('');
-    const filteredSubs = subscriptions.filter(sub =>
-        sub.title.toLowerCase().includes(search.toLowerCase())
-    );
+    const filteredSubs = subscriptions.filter(sub => {
+        const searchLower = search.toLowerCase();
+        const titleMatch = sub.title.toLowerCase().includes(searchLower);
+        const tags = (sub.category || '').split(',').map(t => t.trim().toLowerCase());
+        const tagMatch = tags.some(tag => tag.includes(searchLower));
+        return titleMatch || tagMatch;
+    });
 
     return (
         <section className="view">
@@ -59,6 +63,9 @@ const SubscriptionsView = ({ onEdit }) => {
 
                                 <div className="sub-details" style={{ flex: 1 }}>
                                     <div className="sub-name" style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>{sub.title}</div>
+                                    <div className="sub-category" style={{ fontSize: '13px', color: 'var(--primary-color)', fontWeight: 500, marginBottom: '2px' }}>
+                                        {sub.category || (language === 'it' ? 'Altro' : 'Other')}
+                                    </div>
                                     <div className="sub-cycle" style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
                                         {sub.method} • {sub.cycleType === 'monthly' ? 'Monthly' : sub.cycleType === 'yearly' ? 'Yearly' : `Every ${sub.cycleCount} mos`}
                                     </div>

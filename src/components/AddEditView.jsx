@@ -22,6 +22,7 @@ const AddEditView = ({ subId, onClose }) => {
         description: '',
         amount: '',
         method: 'Credit Card',
+        category: 'Other',
         cycleType: 'monthly',
         cycleCount: '1',
         firstBill: new Date().toISOString().split('T')[0],
@@ -98,6 +99,14 @@ const AddEditView = ({ subId, onClose }) => {
                                     amountRef.current?.focus();
                                 }
                             }}
+                        />
+                        <label style={{ marginTop: 16 }}>{language === 'it' ? 'Tag personalizzati' : 'Custom Tags'}</label>
+                        <input
+                            type="text"
+                            placeholder={language === 'it' ? 'es. streaming, lavoro, cloud' : 'e.g. streaming, work, cloud'}
+                            value={formData.category || ''}
+                            onChange={e => setFormData({ ...formData, category: e.target.value })}
+                            style={{ marginTop: '8px', background: 'rgba(0,0,0,0.2)' }}
                         />
                     </div>
 
