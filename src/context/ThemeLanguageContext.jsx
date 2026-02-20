@@ -9,18 +9,34 @@ const getSystemTheme = () => {
     return 'light';
 };
 
+
 export const ThemeLanguageProvider = ({ children }) => {
     const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'system');
     const [language, setLanguage] = useState(() => localStorage.getItem('language') || 'en');
+    const [currency, setCurrency] = useState(() => localStorage.getItem('currency') || 'EUR');
 
-    // Apply theme to document
+    // Apply theme to document and listen for system theme changes
     useEffect(() => {
         let appliedTheme = theme;
-        if (theme === 'system') {
-            appliedTheme = getSystemTheme();
-        }
-        document.documentElement.setAttribute('data-theme', appliedTheme);
+        const updateTheme = () => {
+            let newTheme = theme;
+            if (theme === 'system') {
+                newTheme = getSystemTheme();
+            }
+            document.documentElement.setAttribute('data-theme', newTheme);
+        };
+        updateTheme();
         localStorage.setItem('theme', theme);
+
+        let mql;
+        if (theme === 'system' && window.matchMedia) {
+            mql = window.matchMedia('(prefers-color-scheme: dark)');
+            const handler = () => updateTheme();
+            mql.addEventListener ? mql.addEventListener('change', handler) : mql.addListener(handler);
+            return () => {
+                mql.removeEventListener ? mql.removeEventListener('change', handler) : mql.removeListener(handler);
+            };
+        }
     }, [theme]);
 
     // Store language
@@ -28,8 +44,13 @@ export const ThemeLanguageProvider = ({ children }) => {
         localStorage.setItem('language', language);
     }, [language]);
 
+    // Store currency
+    useEffect(() => {
+        localStorage.setItem('currency', currency);
+    }, [currency]);
+
     return (
-        <ThemeLanguageContext.Provider value={{ theme, setTheme, language, setLanguage }}>
+        <ThemeLanguageContext.Provider value={{ theme, setTheme, language, setLanguage, currency, setCurrency }}>
             {children}
         </ThemeLanguageContext.Provider>
     );

@@ -5,12 +5,12 @@ import { Settings } from 'lucide-react';
 
 const DashboardView = ({ setActiveTab }) => {
     const { subscriptions, getTotalMonthlySpend } = useSubscriptions();
-    const { language } = useThemeLanguage();
+    const { language, currency } = useThemeLanguage();
 
     // Simple formatting
     const formattedTotal = getTotalMonthlySpend().toLocaleString(language === 'it' ? 'it-IT' : 'en-US', {
         style: 'currency',
-        currency: 'USD'
+        currency: currency || 'EUR'
     });
 
     // Calculate upcoming (next 7 days)
@@ -80,7 +80,9 @@ const DashboardView = ({ setActiveTab }) => {
                                     <div style={{ fontSize: '15px', fontWeight: 600 }}>{sub.title}</div>
                                     <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{format(sub.nextDate, language === 'it' ? 'dd MMM yyyy' : 'MMM do, yyyy')}</div>
                                 </div>
-                                <div style={{ fontWeight: 700 }}>${parseFloat(sub.amount).toFixed(2)}</div>
+                                <div style={{ fontWeight: 700 }}>
+                                    {parseFloat(sub.amount).toLocaleString(language === 'it' ? 'it-IT' : 'en-US', { style: 'currency', currency: currency || 'EUR' })}
+                                </div>
                             </div>
                         ))
                     )}

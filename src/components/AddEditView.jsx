@@ -1,183 +1,227 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useThemeLanguage } from '../context/ThemeLanguageContext';
 import { useSubscriptions } from '../context/SubscriptionContext';
 import { ChevronLeft, DollarSign } from 'lucide-react';
 
 const COLORS = [
-  '#E50914', '#1DB954', '#00A8E1', '#7B61FF', 
-  '#FF3B30', '#FF9500', '#34C759', '#5AC8FA'
+    '#E50914', '#1DB954', '#00A8E1', '#7B61FF',
+    '#FF3B30', '#FF9500', '#34C759', '#5AC8FA'
 ];
 
-const METHODS = ['Credit Card', 'PayPal', 'Bank Transfer', 'Apple Pay', 'Google Pay', 'Other'];
+const PAY_METHODS = ['Credit Card', 'PayPal', 'Bank Transfer', 'Apple Pay', 'Google Pay', 'Other'];
 
 const AddEditView = ({ subId, onClose }) => {
-  const { subscriptions, addSubscription, updateSubscription, deleteSubscription } = useSubscriptions();
-  
-  const isEditing = !!subId;
-  const existingSub = isEditing ? subscriptions.find(s => s.id === subId) : null;
+    const { subscriptions, addSubscription, updateSubscription, deleteSubscription } = useSubscriptions();
+    const { language, currency } = useThemeLanguage();
 
-  const [formData, setFormData] = useState({
-    title: '',
-    amount: '',
-    method: 'Credit Card',
-    cycleType: 'monthly',
-    cycleCount: '3',
-    firstBill: new Date().toISOString().split('T')[0],
-    color: COLORS[0]
-  });
+    const isEditing = !!subId;
+    const existingSub = isEditing ? subscriptions.find(s => s.id === subId) : null;
 
-  useEffect(() => {
-    if (existingSub) {
-      setFormData(existingSub);
-    }
-  }, [existingSub]);
+    const [formData, setFormData] = useState({
+        title: '',
+        description: '',
+        amount: '',
+        method: 'Credit Card',
+        cycleType: 'monthly',
+        cycleCount: '1',
+        firstBill: new Date().toISOString().split('T')[0],
+        color: COLORS[0]
+    });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (isEditing) {
-      updateSubscription({ ...formData, id: subId });
-    } else {
-      addSubscription(formData);
-    }
-    onClose();
-  };
+    useEffect(() => {
+        if (existingSub) {
+            setFormData(existingSub);
+        }
+    }, [existingSub]);
 
-  const handleDelete = () => {
-    if (isEditing) {
-      deleteSubscription(subId);
-      onClose();
-    }
-  };
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (isEditing) {
+            updateSubscription({ ...formData, id: subId });
+        } else {
+            addSubscription(formData);
+        }
+        onClose();
+    };
 
-  return (
-    <section className="view slide-up" style={{ backgroundColor: 'var(--bg-color)', zIndex: 100 }}>
-      <header className="app-header">
-        <button className="icon-btn" onClick={onClose}>
-          <ChevronLeft size={24} /> Back
-        </button>
-        <h1>{isEditing ? 'Edit Subscription' : 'Add Subscription'}</h1>
-        <div style={{ width: 60 }} /> {/* Spacer */}
-      </header>
-      
-      <main className="scroll-content">
-        <form className="sub-form" onSubmit={handleSubmit}>
-          
-          <div className="form-group glassmorphism" style={{ padding: '20px', border: 'none', backgroundColor: 'var(--surface-color)' }}>
-            <label>Title</label>
-            <input 
-              type="text" 
-              placeholder="e.g. Netflix, Spotify" 
-              value={formData.title}
-              onChange={e => setFormData({...formData, title: e.target.value})}
-              required 
-              style={{ marginTop: '8px', background: 'rgba(0,0,0,0.2)' }}
-            />
-          </div>
-          
-          <div className="form-group row">
-            <div className="col glassmorphism" style={{ padding: '20px', border: 'none', backgroundColor: 'var(--surface-color)' }}>
-              <label>Amount</label>
-              <div className="input-with-icon" style={{ marginTop: '8px' }}>
-                <DollarSign className="icon-left" size={18} />
-                <input 
-                  type="number" 
-                  placeholder="0.00" 
-                  step="0.01" 
-                  min="0" 
-                  value={formData.amount}
-                  onChange={e => setFormData({...formData, amount: e.target.value})}
-                  required 
-                  style={{ background: 'rgba(0,0,0,0.2)' }}
-                />
-              </div>
-            </div>
-          </div>
-          
-          <div className="form-group glassmorphism" style={{ padding: '20px', border: 'none', backgroundColor: 'var(--surface-color)' }}>
-            <label>Billing Method</label>
-            <select 
-              value={formData.method}
-              onChange={e => setFormData({...formData, method: e.target.value})}
-              required
-              style={{ marginTop: '8px', background: 'rgba(0,0,0,0.2)' }}
-            >
-              {METHODS.map(m => <option key={m} value={m}>{m}</option>)}
-            </select>
-          </div>
-          
-          <div className="form-group row glassmorphism" style={{ padding: '20px', border: 'none', backgroundColor: 'var(--surface-color)' }}>
-            <div className="col">
-              <label>Billing Cycle</label>
-              <select 
-                value={formData.cycleType}
-                onChange={e => setFormData({...formData, cycleType: e.target.value})}
-                required
-                style={{ marginTop: '8px', background: 'rgba(0,0,0,0.2)' }}
-              >
-                <option value="monthly">Every Month</option>
-                <option value="custom-months">Every X Months</option>
-                <option value="yearly">Every Year</option>
-              </select>
-            </div>
-            
-            {formData.cycleType === 'custom-months' && (
-              <div className="col">
-                <label>Months (X)</label>
-                <input 
-                  type="number" 
-                  min="2" max="11" 
-                  value={formData.cycleCount}
-                  onChange={e => setFormData({...formData, cycleCount: e.target.value})}
-                  style={{ marginTop: '8px', background: 'rgba(0,0,0,0.2)' }}
-                />
-              </div>
-            )}
-          </div>
-          
-          <div className="form-group glassmorphism" style={{ padding: '20px', border: 'none', backgroundColor: 'var(--surface-color)' }}>
-            <label>Next Billing Date</label>
-            <input 
-              type="date" 
-              value={formData.firstBill}
-              onChange={e => setFormData({...formData, firstBill: e.target.value})}
-              required 
-              style={{ marginTop: '8px', background: 'rgba(0,0,0,0.2)' }}
-            />
-          </div>
+    const handleDelete = () => {
+        if (isEditing) {
+            deleteSubscription(subId);
+            onClose();
+        }
+    };
 
-          <div className="form-group glassmorphism" style={{ padding: '20px', border: 'none', backgroundColor: 'var(--surface-color)' }}>
-            <label>Color Accent</label>
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '12px' }}>
-              {COLORS.map(c => (
-                <div 
-                  key={c}
-                  onClick={() => setFormData({...formData, color: c})}
-                  style={{
-                    width: '36px', height: '36px', borderRadius: '18px', cursor: 'pointer',
-                    backgroundColor: c,
-                    border: formData.color === c ? '3px solid white' : '3px solid transparent',
-                    transform: formData.color === c ? 'scale(1.1)' : 'scale(1)',
-                    transition: 'all 0.2s',
-                    boxShadow: 'var(--shadow-sm)'
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-          
-          <div style={{ padding: '20px 0 40px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <button type="submit" className="btn-primary">
-              {isEditing ? 'Save Changes' : 'Create Subscription'}
-            </button>
-            {isEditing && (
-              <button type="button" className="btn-danger" onClick={handleDelete}>
-                Delete Subscription
-              </button>
-            )}
-          </div>
-        </form>
-      </main>
-    </section>
-  );
+    const descriptionRef = useRef(null);
+    const amountRef = useRef(null);
+    return (
+        <section className="view slide-up" style={{ backgroundColor: 'var(--bg-color)', zIndex: 100 }}>
+            <header className="app-header">
+                <button className="icon-btn" onClick={onClose}>
+                    <ChevronLeft size={24} /> Back
+                </button>
+                <h1>{isEditing ? 'Edit Subscription' : 'Add Subscription'}</h1>
+                <div style={{ width: 60 }} /> {/* Spacer */}
+            </header>
+
+            <main className="scroll-content">
+                <form className="sub-form" onSubmit={handleSubmit}>
+
+                    <div className="form-group glassmorphism" style={{ padding: '20px', border: 'none', backgroundColor: 'var(--surface-color)' }}>
+                        <label>{language === 'it' ? 'Nome' : 'Name'}</label>
+                        <input
+                            type="text"
+                            placeholder={language === 'it' ? 'es. Netflix, Spotify' : 'e.g. Netflix, Spotify'}
+                            value={formData.title}
+                            onChange={e => setFormData({ ...formData, title: e.target.value })}
+                            required
+                            style={{ marginTop: '8px', background: 'rgba(0,0,0,0.2)' }}
+                            tabIndex={1}
+                            onKeyDown={e => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    descriptionRef.current?.focus();
+                                }
+                            }}
+                        />
+                        <label style={{ marginTop: 16 }}>{language === 'it' ? 'Descrizione' : 'Description'}</label>
+                        <input
+                            type="text"
+                            placeholder={language === 'it' ? 'es. Account famiglia, promo, ecc.' : 'e.g. Family account, promo, etc.'}
+                            value={formData.description}
+                            onChange={e => setFormData({ ...formData, description: e.target.value })}
+                            style={{ marginTop: '8px', background: 'rgba(0,0,0,0.2)' }}
+                            tabIndex={2}
+                            ref={descriptionRef}
+                            onKeyDown={e => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    amountRef.current?.focus();
+                                }
+                            }}
+                        />
+                    </div>
+
+                    <div className="form-group glassmorphism" style={{ padding: '20px', border: 'none', backgroundColor: 'var(--surface-color)' }}>
+                        <label style={{ marginBottom: 8, display: 'block' }}>{language === 'it' ? 'Dati di fatturazione' : 'Billing Details'}</label>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                            <div>
+                                <label>{language === 'it' ? 'Importo' : 'Amount'}</label>
+                                <div className="input-with-icon" style={{ marginTop: '8px' }}>
+                                    <span className="icon-left" style={{ fontWeight: 700, fontSize: 18 }}>
+                                        {currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : currency === 'JPY' ? '¥' : currency === 'CHF' ? 'CHF' : ''}
+                                    </span>
+                                    <input
+                                        type="number"
+                                        placeholder="0.00"
+                                        step="0.01"
+                                        min="0"
+                                        value={formData.amount}
+                                        onChange={e => setFormData({ ...formData, amount: e.target.value })}
+                                        required
+                                        style={{ background: 'rgba(0,0,0,0.2)' }}
+                                        tabIndex={3}
+                                        ref={amountRef}
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label style={{ marginBottom: 8, display: 'block' }}>{language === 'it' ? 'Periodo di fatturazione' : 'Billing Period'}</label>
+                                <div style={{ display: 'flex', gap: 12 }}>
+                                    <span style={{ alignSelf: 'center', minWidth: 32 }}>{language === 'it' ? 'Ogni' : 'Every'}</span>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={formData.cycleType === 'yearly' ? 1 : formData.cycleCount}
+                                        onChange={e => {
+                                            const val = e.target.value;
+                                            if (formData.cycleType === 'yearly') {
+                                                setFormData({ ...formData, cycleType: 'yearly', cycleCount: '1' });
+                                            } else {
+                                                setFormData({ ...formData, cycleCount: val });
+                                            }
+                                        }}
+                                        style={{ width: 60, background: 'rgba(0,0,0,0.2)' }}
+                                        disabled={formData.cycleType === 'yearly'}
+                                    />
+                                    <select
+                                        value={formData.cycleType}
+                                        onChange={e => {
+                                            const val = e.target.value;
+                                            if (val === 'yearly') {
+                                                setFormData({ ...formData, cycleType: val, cycleCount: '1' });
+                                            } else if (val === 'monthly') {
+                                                setFormData({ ...formData, cycleType: val, cycleCount: '1' });
+                                            } else {
+                                                setFormData({ ...formData, cycleType: val });
+                                            }
+                                        }}
+                                        style={{ minWidth: 100, background: 'rgba(0,0,0,0.2)' }}
+                                    >
+                                        <option value="monthly">{language === 'it' ? 'Mese' : 'Month'}</option>
+                                        <option value="yearly">{language === 'it' ? 'Anno' : 'Year'}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label>{language === 'it' ? 'Primo pagamento' : 'First payment'}</label>
+                                <input
+                                    type="date"
+                                    value={formData.firstBill}
+                                    onChange={e => setFormData({ ...formData, firstBill: e.target.value })}
+                                    style={{ marginTop: '8px', background: 'rgba(0,0,0,0.2)' }}
+                                    placeholder={language === 'it' ? 'es. Oggi' : 'e.g. Today'}
+                                />
+                            </div>
+                            <div>
+                                <label>{language === 'it' ? 'Metodo di pagamento' : 'Billing Method'}</label>
+                                <select
+                                    value={formData.method}
+                                    onChange={e => setFormData({ ...formData, method: e.target.value })}
+                                    required
+                                    style={{ marginTop: '8px', background: 'rgba(0,0,0,0.2)' }}
+                                >
+                                    {PAY_METHODS.map(m => <option key={m} value={m}>{m}</option>)}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Next Billing Date removed: now determined from first payment and billing period */}
+
+                    <div className="form-group glassmorphism" style={{ padding: '20px', border: 'none', backgroundColor: 'var(--surface-color)' }}>
+                        <label>Color Accent</label>
+                        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '12px' }}>
+                            {COLORS.map(c => (
+                                <div
+                                    key={c}
+                                    onClick={() => setFormData({ ...formData, color: c })}
+                                    style={{
+                                        width: '36px', height: '36px', borderRadius: '18px', cursor: 'pointer',
+                                        backgroundColor: c,
+                                        border: formData.color === c ? '3px solid white' : '3px solid transparent',
+                                        transform: formData.color === c ? 'scale(1.1)' : 'scale(1)',
+                                        transition: 'all 0.2s',
+                                        boxShadow: 'var(--shadow-sm)'
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    <div style={{ padding: '20px 0 40px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <button type="submit" className="btn-primary">
+                            {isEditing ? 'Save Changes' : 'Create Subscription'}
+                        </button>
+                        {isEditing && (
+                            <button type="button" className="btn-danger" onClick={handleDelete}>
+                                Delete Subscription
+                            </button>
+                        )}
+                    </div>
+                </form>
+            </main>
+        </section>
+    );
 };
 
 export default AddEditView;

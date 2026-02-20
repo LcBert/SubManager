@@ -1,16 +1,17 @@
 import React from 'react';
 import { useThemeLanguage } from '../context/ThemeLanguageContext';
-
+import { ChevronLeft } from 'lucide-react';
 
 const SettingsView = ({ setActiveTab }) => {
-    const { theme, setTheme, language, setLanguage } = useThemeLanguage();
+    const { theme, setTheme, language, setLanguage, currency, setCurrency } = useThemeLanguage();
     return (
         <section className="view">
             <header className="app-header">
-                <button className="icon-btn" aria-label={language === 'it' ? 'Indietro' : 'Back'} onClick={() => setActiveTab('dashboard')} style={{ marginRight: 12 }}>
-                    &#8592;
+                <button className="icon-btn" aria-label={language === 'it' ? 'Indietro' : 'Back'} onClick={() => setActiveTab('dashboard')}>
+                    <ChevronLeft size={24} /> {language === 'it' ? 'Indietro' : 'Back'}
                 </button>
-                <h1>{language === 'it' ? 'Impostazioni' : 'Settings'}</h1>
+                <div style={{ flex: 1 }} />
+                <h1 style={{ margin: 0, textAlign: 'right', minWidth: 120 }}>{language === 'it' ? 'Impostazioni' : 'Settings'}</h1>
             </header>
             <main className="scroll-content">
                 <div className="form-group">
@@ -34,6 +35,20 @@ const SettingsView = ({ setActiveTab }) => {
                     >
                         <option value="en">English</option>
                         <option value="it">Italiano</option>
+                    </select>
+                </div>
+                <div className="form-group">
+                    <label htmlFor="currency-select">{language === 'it' ? 'Valuta' : 'Currency'}</label>
+                    <select
+                        id="currency-select"
+                        value={currency}
+                        onChange={e => setCurrency(e.target.value)}
+                    >
+                        <option value="EUR">Euro (€)</option>
+                        <option value="USD">Dollar ($)</option>
+                        <option value="GBP">Pound (£)</option>
+                        <option value="JPY">Yen (¥)</option>
+                        <option value="CHF">Swiss Franc (CHF)</option>
                     </select>
                 </div>
             </main>
