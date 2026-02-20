@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import NotificationEditView from './NotificationEditView';
 import { useSubscriptions } from '../context/SubscriptionContext';
 import { useThemeLanguage } from '../context/ThemeLanguageContext';
 import { PackageOpen, Search } from 'lucide-react';
@@ -7,6 +8,8 @@ const SubscriptionsView = ({ onEdit }) => {
     const { subscriptions } = useSubscriptions();
     const { currency, language } = useThemeLanguage();
     const [search, setSearch] = useState('');
+    const [notifSubId, setNotifSubId] = useState(null); // which sub to add notification for
+    const [notifModalOpen, setNotifModalOpen] = useState(false);
     const filteredSubs = subscriptions.filter(sub => {
         const searchLower = search.toLowerCase();
         const titleMatch = sub.title.toLowerCase().includes(searchLower);
@@ -51,8 +54,12 @@ const SubscriptionsView = ({ onEdit }) => {
                             <div
                                 key={sub.id}
                                 className="sub-item"
-                                style={{ display: 'flex', alignItems: 'center', padding: '16px', borderRadius: '16px', background: 'var(--surface-color)', border: '1px solid var(--border-color)', cursor: 'pointer' }}
-                                onClick={() => onEdit(sub.id)}
+                                style={{ display: 'flex', alignItems: 'center', padding: '16px', borderRadius: '16px', background: 'var(--surface-color)', border: '1px solid var(--border-color)', cursor: 'pointer', position: 'relative' }}
+                                onClick={e => {
+                                    // Only open edit if not clicking notification button
+                                    if (e.target.closest('.notif-btn')) return;
+                                    onEdit(sub.id);
+                                }}
                             >
                                 <div
                                     className="sub-icon"
@@ -77,6 +84,7 @@ const SubscriptionsView = ({ onEdit }) => {
                                     <div className="sub-price" style={{ fontSize: '16px', fontWeight: 700, marginBottom: '4px' }}>
                                         {parseFloat(sub.amount).toLocaleString(language === 'it' ? 'it-IT' : 'en-US', { style: 'currency', currency: currency || 'EUR' })}
                                     </div>
+                                    {/* Notification button removed as requested */}
                                 </div>
                             </div>
                         ))
@@ -84,6 +92,7 @@ const SubscriptionsView = ({ onEdit }) => {
 
                 </div>
             </main>
+            {/* Notification modal removed as requested */}
         </section>
     );
 };
