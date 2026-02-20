@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { t as translate } from '../utils/localization';
 
 const ThemeLanguageContext = createContext();
 
@@ -49,8 +50,10 @@ export const ThemeLanguageProvider = ({ children }) => {
         localStorage.setItem('currency', currency);
     }, [currency]);
 
+    // t function with current language
+    const t = (key, vars = {}) => translate(key, language, vars);
     return (
-        <ThemeLanguageContext.Provider value={{ theme, setTheme, language, setLanguage, currency, setCurrency }}>
+        <ThemeLanguageContext.Provider value={{ theme, setTheme, language, setLanguage, currency, setCurrency, t }}>
             {children}
         </ThemeLanguageContext.Provider>
     );

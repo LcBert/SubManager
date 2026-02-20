@@ -13,7 +13,7 @@ import AddEditView from './components/AddEditView'
 import './index.css'
 
 function App() {
-    const { language } = useThemeLanguage?.() || { language: 'en' };
+    const { language, t } = useThemeLanguage?.() || { language: 'en', t: (k) => k };
     const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'list' | 'settings'
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingSubId, setEditingSubId] = useState(null);
@@ -55,14 +55,14 @@ function App() {
                             onClick={() => setActiveTab('dashboard')}
                         >
                             <PieChart size={24} />
-                            <span>{language === 'it' ? 'Cruscotto' : 'Dashboard'}</span>
+                            <span>{t('dashboard')}</span>
                         </button>
                         <button
                             className={`nav-item ${activeTab === 'list' ? 'active' : ''}`}
                             onClick={() => setActiveTab('list')}
                         >
                             <ListIcon size={24} />
-                            <span>{language === 'it' ? 'Abbonamenti' : 'Subs'}</span>
+                            <span>{t('dashboard')}</span>
                         </button>
                         {!isFormOpen && (
                             <button

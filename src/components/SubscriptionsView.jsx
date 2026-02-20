@@ -6,7 +6,7 @@ import { PackageOpen, Search } from 'lucide-react';
 
 const SubscriptionsView = ({ onEdit }) => {
     const { subscriptions } = useSubscriptions();
-    const { currency, language } = useThemeLanguage();
+    const { currency, language, t } = useThemeLanguage();
     const [search, setSearch] = useState('');
     const [notifSubId, setNotifSubId] = useState(null); // which sub to add notification for
     const [notifModalOpen, setNotifModalOpen] = useState(false);
@@ -21,7 +21,7 @@ const SubscriptionsView = ({ onEdit }) => {
     return (
         <section className="view">
             <header className="app-header">
-                <h1>Your Subscriptions</h1>
+                <h1>{t('dashboard')}</h1>
             </header>
             <main className="scroll-content">
                 <div className="form-group" style={{ marginBottom: 20 }}>
@@ -29,7 +29,7 @@ const SubscriptionsView = ({ onEdit }) => {
                         <span className="icon-left"><Search size={18} /></span>
                         <input
                             type="text"
-                            placeholder="Search subscriptions..."
+                            placeholder={t('searchPlaceholder')}
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                             style={{ paddingLeft: 36 }}
@@ -40,13 +40,13 @@ const SubscriptionsView = ({ onEdit }) => {
                     {filteredSubs.length === 0 ? (
                         <div className="empty-state" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
                             <PackageOpen size={48} style={{ opacity: 0.5, marginBottom: '16px' }} />
-                            <p style={{ marginBottom: '24px' }}>No subscriptions added yet.</p>
+                            <p style={{ marginBottom: '24px' }}>{t('noSubscriptions')}</p>
                             <button
                                 className="btn-primary"
                                 onClick={() => onEdit()}
                                 style={{ width: 'auto', padding: '12px 24px' }}
                             >
-                                Add your first
+                                {t('addFirst')}
                             </button>
                         </div>
                     ) : (
@@ -76,7 +76,7 @@ const SubscriptionsView = ({ onEdit }) => {
                                         </div>
                                     )}
                                     <div className="sub-cycle" style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-                                        {sub.method} • {sub.cycleType === 'monthly' ? 'Monthly' : sub.cycleType === 'yearly' ? 'Yearly' : `Every ${sub.cycleCount} mos`}
+                                        {sub.method} • {sub.cycleType === 'monthly' ? t('month') : sub.cycleType === 'yearly' ? t('year') : t('customMonths', { count: sub.cycleCount })}
                                     </div>
                                 </div>
 

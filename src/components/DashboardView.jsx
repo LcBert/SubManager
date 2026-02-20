@@ -5,7 +5,7 @@ import { Settings } from 'lucide-react';
 
 const DashboardView = ({ setActiveTab }) => {
     const { subscriptions, getTotalMonthlySpend } = useSubscriptions();
-    const { language, currency } = useThemeLanguage();
+    const { language, currency, t } = useThemeLanguage();
 
     // Simple formatting
     const formattedTotal = getTotalMonthlySpend().toLocaleString(language === 'it' ? 'it-IT' : 'en-US', {
@@ -44,8 +44,8 @@ const DashboardView = ({ setActiveTab }) => {
     return (
         <section className="view">
             <header className="app-header">
-                <h1>{language === 'it' ? 'Cruscotto' : 'Dashboard'}</h1>
-                <button className="icon-btn" aria-label="Settings" onClick={() => setActiveTab('settings')}>
+                <h1>{t('dashboard')}</h1>
+                <button className="icon-btn" aria-label={t('settings')} onClick={() => setActiveTab('settings')}>
                     <Settings size={20} />
                 </button>
             </header>
@@ -53,24 +53,22 @@ const DashboardView = ({ setActiveTab }) => {
             <main className="scroll-content">
                 <div className="summary-card glassmorphism" style={{ padding: '30px 24px', marginBottom: '32px', textAlign: 'center', background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(30, 41, 59, 0.6) 100%)', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
                     <div style={{ fontSize: '14px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600, marginBottom: '8px' }}>
-                        {language === 'it' ? 'Spesa mensile totale' : 'Total Monthly Spend'}
+                        {t('totalMonthlySpend')}
                     </div>
                     <div style={{ fontSize: '48px', fontWeight: 800, letterSpacing: '-1.5px', marginBottom: '8px' }}>
                         {formattedTotal}
                     </div>
                     <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-                        {language === 'it'
-                            ? `Su ${subscriptions.length} abbonamenti attivi`
-                            : `Across ${subscriptions.length} active subscriptions`}
+                        {t('acrossActive', { count: subscriptions.length })}
                     </div>
                 </div>
 
-                <h2 className="section-title">{language === 'it' ? 'Prossime scadenze' : 'Upcoming Bills'}</h2>
+                <h2 className="section-title">{t('upcomingBills')}</h2>
 
                 <div className="upcoming-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {upcomingBills.length === 0 ? (
                         <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '20px 0' }}>
-                            {language === 'it' ? 'Nessuna scadenza nel prossimo mese.' : 'No bills coming up in the next month.'}
+                            {t('noUpcoming')}
                         </p>
                     ) : (
                         upcomingBills.map(sub => (
