@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import NotificationsPage from './NotificationsPage';
 import { useThemeLanguage } from '../context/ThemeLanguageContext';
+import { scheduleSubscriptionNotifications } from '../utils/notificationScheduler';
 import { useSubscriptions } from '../context/SubscriptionContext';
 import { ChevronLeft, DollarSign } from 'lucide-react';
 
@@ -41,7 +42,7 @@ const AddEditView = ({ subId, onClose }) => {
         }
     }, [existingSub]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         // Remove category if empty or only whitespace
         const cleanedFormData = { ...formData };
@@ -50,8 +51,10 @@ const AddEditView = ({ subId, onClose }) => {
         }
         if (isEditing) {
             updateSubscription({ ...cleanedFormData, id: subId });
+            await scheduleSubscriptionNotifications({ ...cleanedFormData, id: subId }, cleanedFormData.title);
         } else {
             addSubscription(cleanedFormData);
+            await scheduleSubscriptionNotifications(cleanedFormData, cleanedFormData.title);
         }
         onClose();
     };

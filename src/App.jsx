@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { LocalNotifications } from '@capacitor/local-notifications';
 import { SubscriptionProvider } from './context/SubscriptionContext'
 import { ThemeLanguageProvider, useThemeLanguage } from './context/ThemeLanguageContext'
 import { PieChart, List as ListIcon, Plus } from 'lucide-react'
@@ -16,6 +17,11 @@ function App() {
     const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'list' | 'settings'
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingSubId, setEditingSubId] = useState(null);
+
+    useEffect(() => {
+        // Request notification permissions on app open
+        LocalNotifications.requestPermissions();
+    }, []);
 
     const openForm = (subId = null) => {
         setEditingSubId(subId);
